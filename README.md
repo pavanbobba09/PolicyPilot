@@ -2,6 +2,8 @@
 
 ![PolicyPilot logo](PolicyPilot_Logo.png)
 
+[Launch the live PolicyPilot health advisor](https://policypilot-health-advisor.streamlit.app/)
+
 PolicyPilot is a full-stack, source-grounded U.S. health insurance advisor. It combines a Streamlit chat interface, FastAPI, LangGraph, ChromaDB, Gemini, and Groq to answer personalized coverage and eligibility questions using approved government sources.
 
 > PolicyPilot provides informational guidance, not an official eligibility or coverage determination. Users should confirm decisions with the relevant government program, Marketplace, employer, or insurer.
