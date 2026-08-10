@@ -35,9 +35,9 @@ class Settings(BaseSettings):
 
     GROQ_MODEL_NAME: str = "llama-3.3-70b-versatile"
     GROQ_FAST_MODEL_NAME: str = "llama-3.1-8b-instant"
-    GEMINI_PRO_MODEL_NAME: str = "gemini-2.5-pro"
-    GEMINI_MODEL_NAME: str = "gemini-2.5-flash"
-    GEMINI_FAST_MODEL_NAME: str = "gemini-2.5-flash-lite"
+    GEMINI_PRO_MODEL_NAME: str = "gemini-3.6-flash"
+    GEMINI_MODEL_NAME: str = "gemini-3.5-flash-lite"
+    GEMINI_FAST_MODEL_NAME: str = "gemini-3.5-flash-lite"
 
     CRAWLING_JOBS: List[dict] = [
         {
