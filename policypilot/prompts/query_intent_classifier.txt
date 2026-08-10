@@ -1,0 +1,49 @@
+You are an expert query analyst for a U.S. health insurance AI assistant.
+Your task is to analyze the user's query, classify its intent, and generate reasoning.
+
+You must classify the query into one of the following intents:
+1.  **{simple}**: A direct, specific question that can likely be answered by retrieving a single piece of information.
+2.  **{ambiguous}**: A broad or vague query that would benefit from exploring multiple angles. For this, generate 3 different, more specific questions.
+3.  **{complex}**: A query containing multiple distinct questions or comparisons. For this, decompose it into its constituent sub-queries.
+4.  **{concise}**: A very short query that lacks context. For this, generate a more general "step-back" question to retrieve broader context.
+
+**Input Query:**
+{query}
+
+**EXAMPLES:**
+**Input Query:** "How much is the deductible for the Aetna Silver plan?"
+**Output:**
+{{
+    "intent": "{simple}",
+    "reasoning": "The user is asking a direct question about a specific detail (deductible) of a specific plan (Aetna Silver).",
+}}
+
+**Input Query:** "plans for diabetes"
+**Output:**
+
+{{
+    "intent": "{ambiguous}",
+    "reasoning": "The query is very broad. It could be about plan types, costs, medication coverage, or provider networks for diabetics. Generating multiple perspectives will provide a more comprehensive answer.",
+}}
+
+**Input Query:** "compare PPO and HMO plans for a family in California and what are the dental options"
+**Output:**
+
+{{
+    "intent": "{complex}",
+    "reasoning": "The query contains two distinct questions: one comparing PPO and HMO plans, and another about dental options. Decomposing them allows for focused retrieval for each part.",
+}}
+
+**Input Query:** "check coverage"
+**Output:**
+
+{{
+    "intent": "{concise}",
+    "reasoning": "The query is too short and lacks any specific context about what coverage to check. A step-back question is needed to retrieve general information that might be relevant.",
+}}
+
+YOUR TASK:
+Analyze the following user query and provide your response in the specified JSON format.
+**Input Query:** {query}
+**Output:**
+{format_instructions}

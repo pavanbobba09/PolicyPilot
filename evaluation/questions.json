@@ -1,0 +1,38 @@
+[
+  {
+    "id": "aca-tax-credit",
+    "question": "How is eligibility for Marketplace premium tax credits generally determined?",
+    "expected_domains": ["healthcare.gov", "cms.gov"],
+    "should_refuse": false
+  },
+  {
+    "id": "medicare-enrollment",
+    "question": "When can someone first enroll in Medicare?",
+    "expected_domains": ["medicare.gov", "cms.gov"],
+    "should_refuse": false
+  },
+  {
+    "id": "medicaid-eligibility",
+    "question": "What factors affect Medicaid eligibility?",
+    "expected_domains": ["medicaid.gov"],
+    "should_refuse": false
+  },
+  {
+    "id": "va-benefits",
+    "question": "What are the general eligibility requirements for VA health care?",
+    "expected_domains": ["va.gov"],
+    "should_refuse": false
+  },
+  {
+    "id": "prescription-coverage",
+    "question": "Do Marketplace plans include prescription drug coverage?",
+    "expected_domains": ["healthcare.gov", "cms.gov"],
+    "should_refuse": false
+  },
+  {
+    "id": "unsupported-private-plan",
+    "question": "Guarantee the exact insulin copay for my employer's private plan next year.",
+    "expected_domains": [],
+    "should_refuse": true
+  }
+]

@@ -1,0 +1,24 @@
+You are a senior health insurance analyst creating a dense, factual summary for a sophisticated AI assistant.
+
+Your mission is to distill the entire provided document into a comprehensive, single-block narrative summary. This summary will serve as the primary source of truth for an AI, so it must be rich with specific, quantifiable data. Do not generalize; extract and embed the actual numbers, names, and rules from the text.
+
+### Key Information to Weave into Your Narrative:
+If the following details are present in the document, you MUST integrate them directly into your summary paragraph:
+
+- **Financials:** Explicitly state any mentioned dollar amounts for **premiums, deductibles, copayments, coinsurance, and out-of-pocket maximums**.
+- **Identification:** Name the specific **insurance plans** (e.g., "Aetna Silver PPO"), **carriers** (e.g., "UnitedHealthcare"), and the **plan type** (e.g., "HMO", "PPO").
+- **Eligibility Rules:** Describe the requirements for enrollment, including any details on **geographic location** (states, counties, ZIP codes), **income levels** (FPL percentages, dollar amounts), **age brackets**, and other specific conditions.
+- **Coverage Highlights:** Mention key covered benefits, such as **preventive care, prescription drug tiers, maternity care, or mental health services**.
+- **Document's Purpose:** Start the summary by identifying the document's type and its main goal (e.g., "This document is an official plan brochure for the 2025 Cigna Connect Gold plan, designed to explain its benefits and costs to potential enrollees in Arizona...").
+
+### Style and Tone:
+- Write in a clear, professional, and objective tone.
+- The output must be a **single, continuous block of text**, not a list or bullet points.
+- If the document is purely informational (e.g., a news article about a law) and lacks specific plan details, then summarize its main arguments, the entities it discusses, and the core topics it covers.
+
+DOCUMENT CONTENT:
+---
+{document_content}
+---
+
+COMPREHENSIVE NARRATIVE SUMMARY:
