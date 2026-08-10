@@ -1,7 +1,9 @@
+import sqlite3
 from types import SimpleNamespace
 
 from langchain_core.documents import Document
 from langgraph.checkpoint.memory import MemorySaver
+from langgraph.checkpoint.sqlite import SqliteSaver
 
 from policypilot.core.agent_orchestrator import OrchestratorDependencies, build_orchestrator
 from policypilot.core.agents.advisor_agent import GROUNDING_FAILURE
@@ -72,7 +74,7 @@ class FakeAdvisor:
         return "Grounded ([CMS](https://www.cms.gov/rules))."
 
 
-def run_graph(transform_batches, grades, search_results=None):
+def run_graph(transform_batches, grades, search_results=None, checkpointer=None):
     transformer = FakeTransformer(transform_batches)
     router = FakeRouter(grades)
     searcher = FakeSearcher(search_results)
@@ -87,7 +89,7 @@ def run_graph(transform_batches, grades, search_results=None):
         ingestor=ingestor,
         advisor=advisor,
     )
-    graph = build_orchestrator(deps, checkpointer=MemorySaver())
+    graph = build_orchestrator(deps, checkpointer=checkpointer or MemorySaver())
     state = graph.invoke(
         {
             "user_profile": {"state": "Texas"},
@@ -133,3 +135,21 @@ def test_web_fallback_is_bounded_and_refuses_insufficient_evidence():
     assert transformer.calls == router.calls == 2
     assert searcher.calls == ingestor.calls == 1
     assert advisor.calls == 0
+
+
+def test_sqlite_checkpointer_persists_a_graph_turn(tmp_path):
+    connection = sqlite3.connect(tmp_path / "checkpoints.db", check_same_thread=False)
+    checkpointer = SqliteSaver(connection)
+
+    state, *_ = run_graph(
+        [[document("initial")]],
+        [True],
+        checkpointer=checkpointer,
+    )
+
+    assert state["generation"].startswith("Grounded")
+    assert list(
+        checkpointer.list(
+            {"configurable": {"thread_id": "test-thread", "checkpoint_ns": ""}}
+        )
+    )
