@@ -26,7 +26,7 @@ flowchart LR
     PROFILE -->|Yes| RF["Gemini query reformulation"]
     RF --> RET["Groq query strategy + Chroma retrieval"]
     RET --> GRADE{"Groq relevance grade"}
-    GRADE -->|Relevant| ANSWER["Gemini Pro answer + citation validation"]
+    GRADE -->|Relevant| ANSWER["Gemini final answer + citation validation"]
     GRADE -->|Insufficient, first pass| SEARCH["Trusted-domain Tavily search"]
     SEARCH --> INGEST["Deduplicate + ingest"]
     INGEST --> RET

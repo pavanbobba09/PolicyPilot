@@ -14,7 +14,6 @@ def _gemini(model: str) -> ChatGoogleGenerativeAI:
     return ChatGoogleGenerativeAI(
         model=model,
         google_api_key=settings.GOOGLE_API_KEY,
-        temperature=0.1,
         max_tokens=None,
         timeout=60,
         max_retries=2,
