@@ -75,6 +75,17 @@ docker compose up --build
 
 The application is available at `http://localhost:8501`. SQLite, checkpoints, downloaded documents, and Chroma data persist in the `policypilot_data` volume. Crawling and ingestion never run automatically during application startup.
 
+## Free hosted demo
+
+The repository includes a Render Blueprint for the FastAPI backend and a Streamlit Community Cloud dependency file for the frontend.
+
+1. In Render, create a Blueprint from this repository and provide `GOOGLE_API_KEY`, `GROQ_API_KEY`, and `TAVILY_API_KEY` when prompted.
+2. After the backend is healthy, note its public URL, such as `https://policypilot-api.onrender.com`.
+3. In Streamlit Community Cloud, deploy `frontend/app.py` from this repository.
+4. In the Streamlit app settings, add `POLICYPILOT_BACKEND_URL = "https://policypilot-api.onrender.com/api"` to the secrets configuration.
+
+Render's free service filesystem is ephemeral, so its local SQLite and Chroma data can be lost when the service is restarted or redeployed. The bounded trusted-web fallback lets the demo acquire evidence on demand, but a durable hosted release should replace local storage with persistent managed services. Free services can also sleep while idle, making the first request slower.
+
 ## API
 
 - `POST /api/chat` runs one profile or advisor turn. The response retains the original fields and adds `sources`, a list of `{name, url}` government references used by the latest answer.

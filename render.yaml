@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: policypilot-api
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile.backend
+    healthCheckPath: /health
+    autoDeployTrigger: commit
+    envVars:
+      - key: GOOGLE_API_KEY
+        sync: false
+      - key: GROQ_API_KEY
+        sync: false
+      - key: TAVILY_API_KEY
+        sync: false
