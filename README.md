@@ -79,6 +79,8 @@ The application is available at `http://localhost:8501`. SQLite, checkpoints, do
 
 The repository includes a Render Blueprint for the FastAPI backend and a Streamlit Community Cloud dependency file for the frontend.
 
+The backend image preloads its local embedding model during the Docker build so hosted cold starts do not depend on a runtime model download. Chromium is isolated to `Dockerfile.tools` and is not included in the hosted API image.
+
 1. In Render, create a Blueprint from this repository and provide `GOOGLE_API_KEY`, `GROQ_API_KEY`, and `TAVILY_API_KEY` when prompted.
 2. After the backend is healthy, note its public URL, such as `https://policypilot-api.onrender.com`.
 3. In Streamlit Community Cloud, deploy `frontend/app.py` from this repository.

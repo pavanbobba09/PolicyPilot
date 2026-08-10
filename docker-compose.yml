@@ -33,7 +33,7 @@ services:
     profiles: ["tools"]
     build:
       context: .
-      dockerfile: Dockerfile.backend
+      dockerfile: Dockerfile.tools
     env_file: .env
     command: ["python", "-m", "scripts.run_crawler"]
     volumes:
