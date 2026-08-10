@@ -3,16 +3,30 @@ from functools import lru_cache
 from typing import List, Optional
 
 import chromadb
+from chromadb.utils.embedding_functions import DefaultEmbeddingFunction
 from langchain_chroma import Chroma
 from langchain_core.documents import Document
 from langchain_core.embeddings import Embeddings
-from langchain_huggingface import HuggingFaceEmbeddings
 
 from policypilot.config import settings
 
 
 logger = logging.getLogger(__name__)
 EMBEDDING_MODEL_NAME = "sentence-transformers/all-MiniLM-L6-v2"
+
+
+class ChromaONNXEmbeddings(Embeddings):
+    """LangChain adapter for Chroma's CPU-only all-MiniLM ONNX runtime."""
+
+    def __init__(self):
+        self._embedding_function = DefaultEmbeddingFunction()
+
+    def embed_documents(self, texts: List[str]) -> List[List[float]]:
+        embeddings = self._embedding_function(texts)
+        return [embedding.tolist() for embedding in embeddings]
+
+    def embed_query(self, text: str) -> List[float]:
+        return self.embed_documents([text])[0]
 
 
 class VectorStoreService:
@@ -32,12 +46,8 @@ class VectorStoreService:
         )
 
     def _get_embedding_function(self) -> Embeddings:
-        logger.info("Loading embedding model %s", EMBEDDING_MODEL_NAME)
-        return HuggingFaceEmbeddings(
-            model_name=EMBEDDING_MODEL_NAME,
-            model_kwargs={"device": "cpu"},
-            encode_kwargs={"normalize_embeddings": False},
-        )
+        logger.info("Loading ONNX embedding model %s", EMBEDDING_MODEL_NAME)
+        return ChromaONNXEmbeddings()
 
     def add_documents(self, documents: List[Document], ids: Optional[List[str]] = None) -> List[str]:
         if not documents:
