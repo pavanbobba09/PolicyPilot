@@ -10,7 +10,7 @@ PolicyPilot is a full-stack, source-grounded U.S. health insurance advisor. It c
 
 - A bounded agentic-RAG graph with query reformulation, multi-strategy retrieval, relevance grading, one web-search fallback, re-retrieval, and grounded refusal.
 - Explicit model responsibilities: Groq/Llama handles retrieval-oriented classification, transformation, grading, and summarization; Gemini handles profile conversation, reformulation, search-query generation, and final synthesis.
-- Persistent ChromaDB retrieval with CPU ONNX `all-MiniLM-L6-v2` embeddings and SQLite LangGraph checkpoints.
+- Persistent ChromaDB retrieval with hosted Gemini retrieval embeddings and SQLite LangGraph checkpoints.
 - Trusted-source enforcement for HealthCare.gov, CMS.gov, Medicaid.gov, Medicare.gov, VA.gov, and TRICARE.
 - Deterministic, content-hash-based ingestion that skips unchanged chunks and replaces changed versions.
 - Citation validation that permits only URLs present in the retrieved document metadata.
@@ -79,7 +79,7 @@ The application is available at `http://localhost:8501`. SQLite, checkpoints, do
 
 The repository includes a Render Blueprint for the FastAPI backend and a Streamlit Community Cloud dependency file for the frontend.
 
-The backend image preloads its CPU ONNX embedding model during the Docker build so hosted cold starts do not depend on a runtime model download or PyTorch/CUDA. Chromium is isolated to `Dockerfile.tools` and is not included in the hosted API image.
+The API uses hosted Gemini embeddings so the free Render instance does not load a memory-intensive local model. Chromium is isolated to `Dockerfile.tools` and is not included in the hosted API image.
 
 1. In Render, create a Blueprint from this repository and provide `GOOGLE_API_KEY`, `GROQ_API_KEY`, and `TAVILY_API_KEY` when prompted.
 2. After the backend is healthy, note its public URL, such as `https://policypilot-api.onrender.com`.
@@ -87,6 +87,8 @@ The backend image preloads its CPU ONNX embedding model during the Docker build 
 4. In the Streamlit app settings, add `POLICYPILOT_BACKEND_URL = "https://policypilot-api.onrender.com/api"` to the secrets configuration.
 
 Render's free service filesystem is ephemeral, so its local SQLite and Chroma data can be lost when the service is restarted or redeployed. The bounded trusted-web fallback lets the demo acquire evidence on demand, but a durable hosted release should replace local storage with persistent managed services. Free services can also sleep while idle, making the first request slower.
+
+Embedding vectors from older PolicyPilot versions are not compatible with the current hosted embedding model. Remove `data/vector_store` and rerun ingestion when upgrading an existing local checkout.
 
 ## API
 

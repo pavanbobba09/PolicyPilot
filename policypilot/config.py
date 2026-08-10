@@ -38,6 +38,8 @@ class Settings(BaseSettings):
     GEMINI_PRO_MODEL_NAME: str = "gemini-3.6-flash"
     GEMINI_MODEL_NAME: str = "gemini-3.5-flash-lite"
     GEMINI_FAST_MODEL_NAME: str = "gemini-3.5-flash-lite"
+    GEMINI_EMBEDDING_MODEL_NAME: str = "models/gemini-embedding-2"
+    GEMINI_EMBEDDING_DIMENSIONS: int = 384
 
     CRAWLING_JOBS: List[dict] = [
         {
