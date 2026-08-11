@@ -10,6 +10,7 @@ logger = logging.getLogger(__name__)
 
 # --- Configuration ---
 BACKEND_URL = os.getenv("POLICYPILOT_BACKEND_URL", "http://localhost:8000/api").rstrip("/")
+GEODATA_REQUEST_TIMEOUTS = (20, 60)
 
 # --- Streamlit Page Configuration ---
 st.set_page_config(
@@ -29,6 +30,7 @@ with col2:
 st.caption("Your AI guide to U.S. Health Insurance")
 
 # --- Session State Initialization ---
+# Initializes all necessary keys in the session state.
 def initialize_session_state():
     """Initializes all necessary keys in the session state."""
     if "current_phase" not in st.session_state:
@@ -48,17 +50,42 @@ def initialize_session_state():
 initialize_session_state()
 
 # --- Helper Functions for API Calls ---
+# Calls the FastAPI /geodata endpoint. Cached to prevent re-calls.
 @st.cache_data
 def get_geodata_from_backend(_zip_code: str):
     """Calls the FastAPI /geodata endpoint. Cached to prevent re-calls."""
-    try:
-        response = requests.get(f"{BACKEND_URL}/geodata/{_zip_code}", timeout=20)
-        response.raise_for_status()
-        return response.json()
-    except requests.exceptions.RequestException as e:
-        st.error(f"Error fetching location data: {e}")
-        return None
+    endpoint = f"{BACKEND_URL}/geodata/{_zip_code}"
+    for attempt, timeout in enumerate(GEODATA_REQUEST_TIMEOUTS, start=1):
+        try:
+            response = requests.get(endpoint, timeout=timeout)
+            response.raise_for_status()
+            return response.json()
+        except (requests.exceptions.Timeout, requests.exceptions.ConnectionError) as exc:
+            if attempt < len(GEODATA_REQUEST_TIMEOUTS):
+                logger.warning(
+                    "Location request timed out on attempt %s; retrying once",
+                    attempt,
+                )
+                continue
+            logger.error("Location service remained unavailable after retry: %s", exc)
+            st.error(
+                "The location service is taking longer than expected. "
+                "Please wait a moment and try your ZIP code again."
+            )
+            return None
+        except requests.exceptions.HTTPError as exc:
+            logger.warning("Location service rejected the ZIP-code request: %s", exc)
+            if exc.response is not None and exc.response.status_code == 404:
+                st.error("We could not find that ZIP code. Please check it and try again.")
+            else:
+                st.error("The location service could not verify that ZIP code right now.")
+            return None
+        except requests.exceptions.RequestException as exc:
+            logger.error("Location request failed: %s", exc)
+            st.error("The location service is temporarily unavailable. Please try again.")
+            return None
 
+# Calls the single, unified FastAPI /chat endpoint.
 def send_chat_message_to_backend(user_message: str):
     """Calls the single, unified FastAPI /chat endpoint."""
     payload = {
@@ -80,7 +107,9 @@ def send_chat_message_to_backend(user_message: str):
 
 # --- UI Rendering Functions ---
 
+# Render the ZIP-code form and store validated location data in session state.
 def display_zip_form():
+    """Render the ZIP-code form and store validated location data in session state."""
     st.header("1. Let's Start with Your Location")
     zip_code_input = st.text_input("Enter your 5-digit ZIP code:", max_chars=5)
     if st.button("Confirm ZIP Code"):
@@ -94,7 +123,9 @@ def display_zip_form():
         else:
             st.error("Please enter a valid 5-digit ZIP code.")
 
+# Render the basic profile form and persist the submitted answers.
 def display_basic_profile_form():
+    """Render the basic profile form and persist the submitted answers."""
     st.header("2. Tell Us More About You")
     with st.form("basic_profile_form"):
         age = st.number_input("Age", min_value=1)
@@ -116,7 +147,9 @@ def display_basic_profile_form():
             # The chat interface will handle the START_PROFILE_BUILDING trigger
             st.rerun()
 
+# Render chat history, submit messages, and display backend responses.
 def display_chat_interface():
+    """Render chat history, submit messages, and display backend responses."""
     st.header("3. Let's Chat!")
 
     # If this is the first time entering the chat phase, get the first question.

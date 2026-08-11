@@ -15,6 +15,7 @@ _prompt_cache: Dict[str, str] = {}
 # This makes the loader robust, regardless of the current working directory.
 PROMPTS_DIR = Path(__file__).resolve().parent
 
+# Loads a prompt from a .txt file in the prompts directory.
 def load_prompt(prompt_name: str) -> Optional[str]:
     """
     Loads a prompt from a .txt file in the prompts directory.

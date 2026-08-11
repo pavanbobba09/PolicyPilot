@@ -10,8 +10,10 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
+# Validate a ZIP code and return its city and state information.
 @router.get("/geodata/{zip_code}", response_model=GeoDataResponse)
 def get_geolocation_data(zip_code: str):
+    """Validate a ZIP code and return its city and state information."""
     if not zip_code.isdigit() or len(zip_code) != 5:
         raise HTTPException(status_code=400, detail="Invalid ZIP code format.")
     geo_data = get_geo_data_from_zip(zip_code)
@@ -26,6 +28,7 @@ def get_geolocation_data(zip_code: str):
     )
 
 
+# Run one bounded PolicyPilot graph turn without logging sensitive profile data.
 @router.post("/chat", response_model=ChatResponse)
 async def chat(body: ChatRequest, request: Request):
     """Run one bounded PolicyPilot graph turn without logging sensitive profile data."""
@@ -58,5 +61,5 @@ async def chat(body: ChatRequest, request: Request):
         updated_profile=final_state.get("user_profile", body.user_profile),
         updated_history=final_state.get("conversation_history", body.conversation_history),
         is_profile_complete=final_state.get("is_profile_complete", body.is_profile_complete),
-        sources=final_state.get("sources", []),
+        sources=final_state.get("sources", [])
     )

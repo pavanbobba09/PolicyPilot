@@ -6,13 +6,17 @@ logger = logging.getLogger(__name__)
 
 class ZipCodeData(object):
     """A simple data class to hold the results of our geolocation lookup."""
+    # Initialize this object and its required dependencies.
     def __init__(self, state: str, state_abbr: str, city: str, county: str):
+        """Initialize this object and its required dependencies."""
         self.state = state
         self.state_abbr = state_abbr
         self.city = city
         self.county = county
 
+    # Serialize the ZIP-code lookup result for API responses.
     def to_dict(self) -> Dict[str, Any]:
+        """Serialize the ZIP-code lookup result for API responses."""
         return {
             "state": self.state,
             "state_abbreviation": self.state_abbr,
@@ -20,6 +24,7 @@ class ZipCodeData(object):
             "county": self.county
         }
 
+# Step 1: Get latitude and longitude from a ZIP code using a simple API.
 def get_lat_lon_from_zip(zip_code: str) -> Optional[Dict[str, float]]:
     """
     Step 1: Get latitude and longitude from a ZIP code using a simple API.
@@ -48,6 +53,7 @@ def get_lat_lon_from_zip(zip_code: str) -> Optional[Dict[str, float]]:
         logger.error("ZIP geolocation lookup failed: %s", e)
         return None
 
+# Step 2: Get county information from latitude and longitude using the.
 def get_county_from_lat_lon(lat: float, lon: float) -> Optional[str]:
     """
     Step 2: Get county information from latitude and longitude using the
@@ -81,6 +87,7 @@ def get_county_from_lat_lon(lat: float, lon: float) -> Optional[str]:
         logger.error("County lookup failed: %s", e)
         return None
 
+# Orchestrates the two-step process to get state, city, and county from a ZIP code.
 def get_geo_data_from_zip(zip_code: str) -> Optional[ZipCodeData]:
     """
     Orchestrates the two-step process to get state, city, and county from a ZIP code.

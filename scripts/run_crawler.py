@@ -11,7 +11,8 @@ from scripts.data_processing.crawler import crawl_with_requests, crawl_with_sele
 # Configure logging
 logging.basicConfig(level=settings.LOG_LEVEL, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger(__name__)
-
+#scrapping
+# Initializes a headless Chrome WebDriver.
 def setup_selenium_driver():
     """Initializes a headless Chrome WebDriver."""
     logger.info("Setting up Selenium WebDriver...")
@@ -31,6 +32,7 @@ def setup_selenium_driver():
         logger.error(f"Failed to setup Selenium driver: {e}")
         return None
 
+# Main function to run the data crawling jobs.
 def main():
     """Main function to run the data crawling jobs."""
     logger.info("--- Starting PolicyPilot AI Data Acquisition ---")

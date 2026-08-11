@@ -27,6 +27,7 @@ class QueryTransformationAgent:
     from a vector store.
     """
 
+    # Initializes the QueryTransformationAgent.
     def __init__(self, llm, retriever):
         """
         Initializes the QueryTransformationAgent.
@@ -56,6 +57,7 @@ class QueryTransformationAgent:
         self.classifier = QueryIntentClassifierAgent(llm)
         logger.info("QueryTransformationAgent initialized successfully.")
 
+    # Aggregates and merges lists of documents, grouping them by 'source_id'.
     def _unique_union(self, doc_lists: List[List[Document]]) -> List[Document]:
         """
         Aggregates and merges lists of documents, grouping them by 'source_id'.
@@ -115,7 +117,9 @@ class QueryTransformationAgent:
         logger.info(f"Aggregated and merged chunks into {len(final_merged_docs)} final documents.")
         return final_merged_docs
 
+    # Combine multiple ranked retrieval lists using reciprocal-rank fusion.
     def reciprocal_rank_fusion(self, results: list[list], k=60):
+        """Combine multiple ranked retrieval lists using reciprocal-rank fusion."""
         fused_scores = {}
         for docs in results:
             # Iterate through each document in the list, with its rank
@@ -132,6 +136,7 @@ class QueryTransformationAgent:
         ]
         return reranked_results
 
+    # Executes the RAG-Fusion strategy.
     def _perform_rag_fusion(self, original_query: str, generated_queries: List[str]) -> List[Document]:
         """Executes the RAG-Fusion strategy."""
         logger.debug("Performing RAG-Fusion with %d generated queries", len(generated_queries))
@@ -141,12 +146,14 @@ class QueryTransformationAgent:
         return self._unique_union(retrieval_results)
 
 
+    # Executes the Decomposition strategy.
     def _perform_decomposition(self, sub_queries: List[str]) -> List[Document]:
         """Executes the Decomposition strategy."""
         logger.debug("Performing decomposition with %d sub-queries", len(sub_queries))
         retrieval_results = self.retriever.batch(sub_queries)
         return self._unique_union(retrieval_results)
 
+    # Executes the Step-Back strategy.
     def _perform_step_back(self, original_query: str, step_back_query: str) -> List[Document]:
         """Executes the Step-Back strategy."""
         logger.debug("Performing step-back retrieval")
@@ -154,6 +161,7 @@ class QueryTransformationAgent:
         retrieval_results = self.retriever.batch(queries_to_run)
         return self._unique_union(retrieval_results)
 
+    # The main method of the agent. It classifies the query, applies the.
     def transform_and_retrieve(self, query: str) -> List[Document]:
         """
         The main method of the agent. It classifies the query, applies the

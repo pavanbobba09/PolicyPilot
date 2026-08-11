@@ -6,6 +6,7 @@ from langchain_core.documents import Document
 
 logger = logging.getLogger(__name__)
 
+# Chunks the given text and attaches rich metadata to each chunk.
 def chunk_text(text: str, source_metadata: Dict[str, Any]) -> List[Document]:
     """
     Chunks the given text and attaches rich metadata to each chunk.

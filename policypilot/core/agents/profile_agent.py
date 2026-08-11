@@ -16,6 +16,7 @@ class ProfileBuilder:
     It determines the next question and intelligently updates the profile with user answers.
     """
 
+    # Initializes the ProfileBuilder, loading all necessary prompts.
     def __init__(self, llm):
         """Initializes the ProfileBuilder, loading all necessary prompts."""
         self.llm = llm
@@ -27,6 +28,7 @@ class ProfileBuilder:
             logger.critical(f"A required prompt file was not found: {e}. ProfileBuilder cannot function.")
             raise
 
+    # Analyzes the user's current profile and determines the next question to ask,.
     def get_next_question(self, current_profile: Dict[str, Any], conversation_history: Dict[str, Any]) -> str:
         """
         Analyzes the user's current profile and determines the next question to ask,
@@ -52,6 +54,7 @@ class ProfileBuilder:
             logger.error(f"LLM error during question generation: {e}")
             return "I'm sorry, I'm having a little trouble right now. Could we try that again?"
 
+    # Uses an LLM to intelligently update the user's profile with their latest answer.
     def update_profile_with_answer(
         self,
         current_profile: Dict[str, Any],
@@ -101,6 +104,7 @@ class ProfileBuilder:
             # Return the original profile on error
             return current_profile
 
+    # Executes a full turn of the profile-building conversation.
     def run_conversation_turn(
         self,
         current_profile: Dict[str, Any],
