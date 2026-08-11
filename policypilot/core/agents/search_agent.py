@@ -23,18 +23,24 @@ logger = logging.getLogger(__name__)
 DYNAMIC_DATA_DIR = Path("data/dynamic")
 
 
+# Convert arbitrary source text into a filesystem-safe filename.
 def sanitize_filename(name: str) -> str:
+    """Convert arbitrary source text into a filesystem-safe filename."""
     return re.sub(r'[^A-Za-z0-9._-]+', '_', name)[:150]
 
 
+# Infer a supported document extension from a source URL.
 def get_file_extension_from_url(url: str) -> str:
+    """Infer a supported document extension from a source URL."""
     return ".pdf" if urlsplit(url).path.lower().endswith(".pdf") else ".html"
 
 
 class SearchAgent:
     """Search only approved government domains and save results for ingestion."""
 
+    # Initialize this object and its required dependencies.
     def __init__(self, llm, tavily_client: Optional[TavilyClient] = None):
+        """Initialize this object and its required dependencies."""
         self.llm = llm
         self.query_prompt = load_prompt("search_agent")
         self.tavily_client = tavily_client or TavilyClient(api_key=settings.TAVILY_API_KEY)
@@ -42,7 +48,9 @@ class SearchAgent:
         self.session.headers.update({"User-Agent": "PolicyPilot/1.0 (+local portfolio project)"})
         DYNAMIC_DATA_DIR.mkdir(parents=True, exist_ok=True)
 
+    # Turn a user question into a focused health-insurance search query.
     def _formulate_query(self, user_question: str) -> Optional[str]:
+        """Turn a user question into a focused health-insurance search query."""
         try:
             response = self.llm.invoke(f"{self.query_prompt}\n\nUser Question: {user_question}")
             query = response.content.strip()
@@ -51,7 +59,9 @@ class SearchAgent:
             logger.exception("Web-search query formulation failed")
             return None
 
+    # Persist a downloaded search result locally for subsequent ingestion.
     def _save_result_to_file(self, result: dict) -> Optional[Path]:
+        """Persist a downloaded search result locally for subsequent ingestion."""
         url = canonicalize_url(str(result.get("url", "")))
         if not is_trusted_source_url(url):
             logger.warning("Rejected untrusted search result: %s", url)
@@ -75,7 +85,9 @@ class SearchAgent:
             logger.exception("Failed to save trusted search result %s", url)
             return None
 
+    # Search trusted government domains and return locally saved documents.
     def search(self, user_question: str) -> List[Document]:
+        """Search trusted government domains and return locally saved documents."""
         search_query = self._formulate_query(user_question)
         if not search_query:
             return []

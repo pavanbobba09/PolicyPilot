@@ -17,13 +17,16 @@ class DocumentSummarizerAgent:
     """
     A service to generate and cache summaries for full source documents.
     """
+    # Initialize this object and its required dependencies.
     def __init__(self, llm):
+        """Initialize this object and its required dependencies."""
         self.llm = llm
         self.prompt = PromptTemplate.from_template(SUMMARY_PROMPT_TEMPLATE)
         self.chain = self.prompt | self.llm
         self._summary_cache: Dict[str, str] = {}
         logger.info("DocumentSummarizer service initialized.")
 
+    # Retrieves or generates a summary for a given source document.
     def get_summary(self, source_id: int, local_path: str) -> Optional[str]:
         """
         Retrieves or generates a summary for a given source document.
@@ -65,6 +68,7 @@ class DocumentSummarizerAgent:
             return None
 
 
+# Create the source summarizer with its designated Groq/Llama model.
 def build_document_summarizer() -> DocumentSummarizerAgent:
     """Create the source summarizer with its designated Groq/Llama model."""
 

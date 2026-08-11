@@ -18,8 +18,10 @@ logging.basicConfig(
 logger = logging.getLogger(__name__)
 
 
+# Initialize shared database and vector-store resources for the API lifespan.
 @asynccontextmanager
 async def lifespan(app: FastAPI):
+    """Initialize shared database and vector-store resources for the API lifespan."""
     logger.info("Starting PolicyPilot")
     validate_runtime_settings()
     setup_database()
@@ -38,13 +40,17 @@ app = FastAPI(
 app.include_router(api_router, prefix="/api")
 
 
+# Return basic API identity and availability information.
 @app.get("/")
 async def root():
+    """Return basic API identity and availability information."""
     return {"message": "Welcome to PolicyPilot. API documentation is available at /docs."}
 
 
+# Report SQLite and ChromaDB readiness for health monitoring.
 @app.get("/health")
 async def health():
+    """Report SQLite and ChromaDB readiness for health monitoring."""
     sqlite_ready = database_is_ready()
     vector_store = getattr(app.state, "vector_store", None)
     chroma_ready = bool(vector_store and vector_store.is_ready())

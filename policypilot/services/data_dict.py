@@ -3,6 +3,7 @@ from typing import Dict, Iterable
 from langchain_core.documents import Document
 
 
+# Attach Groq-generated source summaries without performing work at import time.
 def build_data_doc_dict(docs: Iterable[Document], summarizer) -> Dict[str, Dict[str, object]]:
     """Attach Groq-generated source summaries without performing work at import time."""
 

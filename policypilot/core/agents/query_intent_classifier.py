@@ -21,6 +21,7 @@ class QueryIntentClassifierAgent:
     A classifier that uses an LLM to determine the user's intent and
     pre-processes the query for optimal RAG performance.
     """
+    # Initializes the classifier with a given LLM.
     def __init__(self, llm):
         """
         Initializes the classifier with a given LLM.
@@ -44,6 +45,7 @@ class QueryIntentClassifierAgent:
         self.chain = self.prompt_template | self.llm | self.parser
         logger.info("QueryIntentClassifierAgent initialized successfully.")
 
+    # Classifies the intent of the query and transforms it accordingly.
     def classify_intent(self, query: str) -> QueryIntent:
         """
         Classifies the intent of the query and transforms it accordingly.

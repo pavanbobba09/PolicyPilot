@@ -12,6 +12,7 @@ logging.basicConfig(level=settings.LOG_LEVEL, format="%(asctime)s - %(levelname)
 logger = logging.getLogger(__name__)
 
 
+# Explicitly ingest crawler output; application startup never crawls or ingests.
 def main() -> None:
     """Explicitly ingest crawler output; application startup never crawls or ingests."""
 

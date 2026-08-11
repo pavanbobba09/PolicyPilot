@@ -99,6 +99,7 @@ class Settings(BaseSettings):
     ]
 
 
+# Fail startup with actionable messages when provider credentials are absent.
 def validate_runtime_settings(*, require_search: bool = True) -> None:
     """Fail startup with actionable messages when provider credentials are absent."""
 

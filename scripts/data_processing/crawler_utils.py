@@ -3,10 +3,12 @@ import re
 from urllib.parse import urlparse
 from pathlib import Path
 
+# Generates a SHA-256 hash for the given binary content.
 def get_content_hash(content: bytes) -> str:
     """Generates a SHA-256 hash for the given binary content."""
     return hashlib.sha256(content).hexdigest()
 
+# Creates a sanitized, readable filename from a URL.
 def sanitize_filename(url: str) -> str:
     """
     Creates a sanitized, readable filename from a URL.

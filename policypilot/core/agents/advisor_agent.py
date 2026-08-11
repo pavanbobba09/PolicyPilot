@@ -19,11 +19,15 @@ GROUNDING_FAILURE = (
 class AdvisorAgent:
     """Generate a personalized answer and enforce source-backed citations."""
 
+    # Initialize this object and its required dependencies.
     def __init__(self, llm):
+        """Initialize this object and its required dependencies."""
         self.llm = llm
         self.agent_prompt = load_prompt("advisor_agent")
 
+    # Build the grounded answer prompt from the question, profile, and evidence.
     def _prompt(self, question: str, user_profile: Dict[str, Any], documents: List[Document]) -> str:
+        """Build the grounded answer prompt from the question, profile, and evidence."""
         context = "\n\n---\n\n".join(
             f"[METADATA: source_name='{document.metadata.get('source_name', 'N/A')}', "
             f"source_url='{document.metadata.get('source_url', 'N/A')}']\n\n{document.page_content}"
@@ -36,12 +40,14 @@ class AdvisorAgent:
             f"retrieved_context:\n{context}"
         )
 
+    # Generate a cited response, retry invalid citations once, and fail safely.
     def generate_response(
         self,
         question: str,
         user_profile: Dict[str, Any],
         documents: List[Document],
     ) -> str:
+        """Generate a cited response, retry invalid citations once, and fail safely."""
         if not documents:
             return GROUNDING_FAILURE
 

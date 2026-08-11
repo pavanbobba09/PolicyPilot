@@ -21,12 +21,14 @@ from .crawler_utils import get_content_hash, sanitize_filename
 
 logger = logging.getLogger(__name__)
 
+# Creates a requests session with a user agent.
 def get_session():
     """Creates a requests session with a user agent."""
     session = requests.Session()
     session.headers.update({"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36"})
     return session
 
+# Downloads a file (HTML, PDF), saves it using the new naming convention, and updates the database.
 def download_and_save_content(session: requests.Session, url: str, dest_folder: Path, source_id: int):
     """Downloads a file (HTML, PDF), saves it using the new naming convention, and updates the database."""
     if not is_trusted_source_url(url):
@@ -62,6 +64,7 @@ def download_and_save_content(session: requests.Session, url: str, dest_folder: 
     logger.info(f"Successfully processed and saved {url} to {save_path}")
     return response.content if file_ext == '.html' else None
 
+# Crawls a domain using the requests library for static sites.
 def crawl_with_requests(job: dict):
     """Crawls a domain using the requests library for static sites."""
     session = get_session()
@@ -102,6 +105,7 @@ def crawl_with_requests(job: dict):
                     queue.append((full_url, current_depth + 1))
         time.sleep(1)
 
+# Crawls a domain using Selenium for dynamic sites.
 def crawl_with_selenium(driver: webdriver.Chrome, job: dict):
     """Crawls a domain using Selenium for dynamic sites."""
     session = get_session()

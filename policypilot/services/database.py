@@ -14,9 +14,12 @@ logging.basicConfig(level=settings.LOG_LEVEL)
 logger = logging.getLogger(__name__)
 
 
+# Return the current UTC timestamp in ISO-8601 format.
 def _utc_now() -> str:
+    """Return the current UTC timestamp in ISO-8601 format."""
     return datetime.now(timezone.utc).isoformat()
 
+# Context manager for handling database connections.
 @contextmanager
 def get_db_connection():
     """Context manager for handling database connections."""
@@ -37,6 +40,7 @@ def get_db_connection():
             conn.close()
             logger.debug("Database connection closed.")
 
+# Creates/updates all necessary tables in the database.
 def setup_database():
     """Creates/updates all necessary tables in the database."""
     logger.info("Setting up database schema...")
@@ -94,6 +98,7 @@ def setup_database():
 
 # --- Crawler-related Helpers ---
 
+# Populates the data_sources table with the initial crawl job start URLs.
 def initialize_crawl_jobs():
     """Populates the data_sources table with the initial crawl job start URLs."""
     logger.info("Initializing crawl jobs from config...")
@@ -112,6 +117,7 @@ def initialize_crawl_jobs():
     logger.info("Crawl jobs initialized successfully.")
 
 
+# Finds an existing data source by URL or creates a new one if it doesn't exist.
 def find_or_create_web_source(url: str, name: str) -> int:
     """
     Finds an existing data source by URL or creates a new one if it doesn't exist.
@@ -142,13 +148,17 @@ def find_or_create_web_source(url: str, name: str) -> int:
         return cursor.lastrowid
 
 
+# Retrieve a data-source record by its canonical URL.
 def get_source_by_url(url: str) -> Optional[Dict[str, Any]]:
+    """Retrieve a data-source record by its canonical URL."""
     with get_db_connection() as conn:
         row = conn.execute("SELECT * FROM data_sources WHERE url = ?", (url,)).fetchone()
         return dict(row) if row else None
 
 
+# Return all stored vector identifiers belonging to a source.
 def get_vector_ids_for_source(source_id: int) -> list[str]:
+    """Return all stored vector identifiers belonging to a source."""
     with get_db_connection() as conn:
         rows = conn.execute(
             "SELECT vector_id FROM knowledge_chunks WHERE source_id = ? AND vector_id IS NOT NULL",
@@ -157,6 +167,7 @@ def get_vector_ids_for_source(source_id: int) -> list[str]:
         return [str(row["vector_id"]) for row in rows]
 
 
+# Atomically replace SQLite chunk metadata after vector storage succeeds.
 def replace_source_chunks(
     source_id: int,
     *,
@@ -185,7 +196,9 @@ def replace_source_chunks(
         conn.commit()
 
 
+# Check whether SQLite is accessible and required tables exist.
 def database_is_ready() -> bool:
+    """Check whether SQLite is accessible and required tables exist."""
     try:
         with get_db_connection() as conn:
             conn.execute("SELECT 1").fetchone()
@@ -194,6 +207,7 @@ def database_is_ready() -> bool:
         return False
 
 
+# Adds a newly discovered URL to the database if it doesn't exist.
 def add_discovered_source(url: str, category: str, data_type: str) -> int:
     """Adds a newly discovered URL to the database if it doesn't exist."""
     with get_db_connection() as conn:
@@ -215,6 +229,7 @@ def add_discovered_source(url: str, category: str, data_type: str) -> int:
 
 # --- User Management Helpers ---
 
+# Creates a new user in the database.
 def create_user(username: str, hashed_password: str, role: str = 'user') -> Optional[int]:
     """Creates a new user in the database."""
     query = "INSERT INTO users (username, hashed_password, role) VALUES (?, ?, ?)"
@@ -232,6 +247,7 @@ def create_user(username: str, hashed_password: str, role: str = 'user') -> Opti
         logger.error(f"Database error while creating user {username}: {e}")
         return None
 
+# Retrieves a user by their username.
 def get_user_by_username(username: str) -> Optional[Dict[str, Any]]:
     """Retrieves a user by their username."""
     query = "SELECT * FROM users WHERE username = ?"
@@ -243,6 +259,7 @@ def get_user_by_username(username: str) -> Optional[Dict[str, Any]]:
 
 # --- User Profile Helpers ---
 
+# Creates or updates a user's 360-degree profile.
 def create_or_update_user_profile(user_id: int, profile_data: Dict[str, Any]) -> bool:
     """Creates or updates a user's 360-degree profile."""
     profile_json = json.dumps(profile_data)
@@ -266,6 +283,7 @@ def create_or_update_user_profile(user_id: int, profile_data: Dict[str, Any]) ->
         logger.error(f"Database error while updating profile for user_id {user_id}: {e}")
         return False
 
+# Retrieves a user's profile.
 def get_user_profile(user_id: int) -> Optional[Dict[str, Any]]:
     """Retrieves a user's profile."""
     query = "SELECT profile_data_json FROM user_profiles WHERE user_id = ?"

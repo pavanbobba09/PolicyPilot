@@ -6,6 +6,7 @@ from typing import Optional
 
 logger = logging.getLogger(__name__)
 
+# Loads and extracts clean text content from an HTML file.
 def load_html_content(file_path: Path) -> Optional[str]:
     """Loads and extracts clean text content from an HTML file."""
     logger.debug(f"Loading HTML from: {file_path}")
@@ -28,6 +29,7 @@ def load_html_content(file_path: Path) -> Optional[str]:
         logger.error(f"Failed to load or parse HTML file {file_path}: {e}")
         return None
 
+# Loads and extracts text content from a PDF file.
 def load_pdf_content(file_path: Path) -> Optional[str]:
     """Loads and extracts text content from a PDF file."""
     logger.debug(f"Loading PDF from: {file_path}")
@@ -50,6 +52,7 @@ def load_pdf_content(file_path: Path) -> Optional[str]:
         logger.error(f"Failed to load or parse PDF file {file_path}: {e}")
         return None
 
+# Generic document loader that dispatches to the correct function.
 def load_document(file_path_str: str) -> Optional[str]:
     """
     Generic document loader that dispatches to the correct function

@@ -15,7 +15,9 @@ DATASET = Path("evaluation/questions.json")
 REFUSAL_MARKERS = ("couldn't verify", "could not verify", "official eligibility")
 
 
+# Run this script's primary workflow.
 def main() -> None:
+    """Run this script's primary workflow."""
     cases = json.loads(DATASET.read_text(encoding="utf-8"))
     totals = {"retrieval_hit": 0, "trusted_sources": 0, "valid_citations": 0, "correct_refusal": 0}
 

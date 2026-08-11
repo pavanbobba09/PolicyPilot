@@ -24,19 +24,27 @@ logger = logging.getLogger(__name__)
 class IngestionService:
     """Load, deduplicate, chunk, and persist trusted web-search documents."""
 
+    # Initialize this object and its required dependencies.
     def __init__(self, vector_store):
+        """Initialize this object and its required dependencies."""
         self.vector_store = vector_store
 
+    # Create a stable SHA-256 digest used to detect content changes.
     @staticmethod
     def _content_hash(content: str) -> str:
+        """Create a stable SHA-256 digest used to detect content changes."""
         return hashlib.sha256(content.encode("utf-8")).hexdigest()
 
+    # Create a deterministic identifier for one source-content chunk.
     @staticmethod
     def _vector_id(url: str, content_hash: str, index: int) -> str:
+        """Create a deterministic identifier for one source-content chunk."""
         source_key = hashlib.sha256(url.encode("utf-8")).hexdigest()[:16]
         return f"source_{source_key}_{content_hash[:16]}_{index:04d}"
 
+    # Load, validate, chunk, embed, and persist trusted source documents.
     def ingest_documents(self, documents_from_search: List[Document]) -> IngestionResult:
+        """Load, validate, chunk, embed, and persist trusted source documents."""
         counts = {"added": 0, "updated": 0, "skipped": 0, "failed": 0}
 
         for search_document in documents_from_search:

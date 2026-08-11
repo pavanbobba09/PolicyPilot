@@ -21,6 +21,7 @@ class RouterAgent:
     It decides whether the existing knowledge is sufficient to answer a question.
     """
 
+    # Initializes the RouterAgent.
     def __init__(self, llm):
         """Initializes the RouterAgent."""
         try:
@@ -35,6 +36,7 @@ class RouterAgent:
             logger.critical(f"Failed to initialize RouterAgent: {e}")
             raise
 
+    # Grades the retrieved documents against the user's question.
     def grade_documents(self, question: str, documents: List[Document]) -> bool:
         """
         Grades the retrieved documents against the user's question.
